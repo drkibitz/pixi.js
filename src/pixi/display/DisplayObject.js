@@ -329,11 +329,8 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
     /*
      * insert start
      */
-
-    var childFirst = start
-    var childLast = start
-    var nextObject;
-    var previousObject;
+    var childFirst, childLast, nextObject, previousObject;
+    childFirst = childLast = start;
 
     previousObject = this.first._iPrev;
 
@@ -360,10 +357,8 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
     /*
      * insert end filter
      */
-    var childFirst = end
-    var childLast = end
-    var nextObject = null;
-    var previousObject = null;
+    childFirst = childLast = end
+    nextObject = previousObject = null;
 
     previousObject = this.last;
     nextObject = previousObject._iNext;
@@ -413,24 +408,22 @@ PIXI.DisplayObject.prototype.removeFilter = function()
     this.filter = false;
 
     // modify the list..
-    var startBlock = this.first;
+    var startBlock = this.first,
+        lastBlock = this.last,
+        nextObject = startBlock._iNext,
+        previousObject = startBlock._iPrev;
 
-    var nextObject = startBlock._iNext;
-    var previousObject = startBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
-    if(previousObject)previousObject._iNext = nextObject;
+    if (nextObject) nextObject._iPrev = previousObject;
+    if (previousObject) previousObject._iNext = nextObject;
 
     this.first = startBlock._iNext;
 
 
     // remove the end filter
-    var lastBlock = this.last;
+    nextObject = lastBlock._iNext;
+    previousObject = lastBlock._iPrev;
 
-    var nextObject = lastBlock._iNext;
-    var previousObject = lastBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
+    if (nextObject) nextObject._iPrev = previousObject;
     previousObject._iNext = nextObject;
 
     // this is always true too!

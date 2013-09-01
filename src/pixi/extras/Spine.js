@@ -1266,12 +1266,12 @@ spine.Atlas = function (atlasText, textureLoader) {
             region.rotate = reader.readValue() == "true";
 
             reader.readTuple(tuple);
-            var x = parseInt(tuple[0]);
-            var y = parseInt(tuple[1]);
+            var x = parseInt(tuple[0], 10);
+            var y = parseInt(tuple[1], 10);
 
             reader.readTuple(tuple);
-            var width = parseInt(tuple[0]);
-            var height = parseInt(tuple[1]);
+            var width = parseInt(tuple[0], 10);
+            var height = parseInt(tuple[1], 10);
 
             region.u = x / page.width;
             region.v = y / page.height;
@@ -1288,23 +1288,23 @@ spine.Atlas = function (atlasText, textureLoader) {
             region.height = Math.abs(height);
 
             if (reader.readTuple(tuple) == 4) { // split is optional
-                region.splits = [parseInt(tuple[0]), parseInt(tuple[1]), parseInt(tuple[2]), parseInt(tuple[3])];
+                region.splits = [parseInt(tuple[0], 10), parseInt(tuple[1], 10), parseInt(tuple[2], 10), parseInt(tuple[3], 10)];
 
                 if (reader.readTuple(tuple) == 4) { // pad is optional, but only present with splits
-                    region.pads = [parseInt(tuple[0]), parseInt(tuple[1]), parseInt(tuple[2]), parseInt(tuple[3])];
+                    region.pads = [parseInt(tuple[0], 10), parseInt(tuple[1], 10), parseInt(tuple[2], 10), parseInt(tuple[3], 10)];
 
                     reader.readTuple(tuple);
                 }
             }
 
-            region.originalWidth = parseInt(tuple[0]);
-            region.originalHeight = parseInt(tuple[1]);
+            region.originalWidth = parseInt(tuple[0], 10);
+            region.originalHeight = parseInt(tuple[1], 10);
 
             reader.readTuple(tuple);
-            region.offsetX = parseInt(tuple[0]);
-            region.offsetY = parseInt(tuple[1]);
+            region.offsetX = parseInt(tuple[0], 10);
+            region.offsetY = parseInt(tuple[1], 10);
 
-            region.index = parseInt(reader.readValue());
+            region.index = parseInt(reader.readValue(), 10);
 
             this.regions.push(region);
         }

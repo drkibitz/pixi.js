@@ -49,14 +49,11 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent != undefined)
-    {
-
+    if (child.parent) {
         //// COULD BE THIS???
         child.parent.removeChild(child);
     //  return;
     }
-
     child.parent = this;
 
     this.children.push(child);
@@ -140,8 +137,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
     if(index >= 0 && index <= this.children.length)
     {
-        if(child.parent != undefined)
-        {
+        if (child.parent) {
             child.parent.removeChild(child);
         }
         child.parent = this;
@@ -164,9 +160,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
         var nextObject;
         var previousObject;
 
-        if(index == this.children.length)
+        if(index === this.children.length)
         {
-            previousObject =  this.last;
+            previousObject = this.last;
             var updateLast = this;
             var prevLast = this.last;
             while(updateLast)
@@ -178,7 +174,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
                 updateLast = updateLast.parent;
             }
         }
-        else if(index == 0)
+        else if(!index)
         {
             previousObject = this;
         }

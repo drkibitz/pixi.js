@@ -79,10 +79,9 @@ PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
 PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
 {
     var children = displayObject.children;
-    var length = children.length;
 
     /// make an interaction tree... {item.__interactiveParent}
-    for (var i = length-1; i >= 0; i--)
+    for (var i = children.length - 1; i >= 0; i--)
     {
         var child = children[i];
 
@@ -197,9 +196,11 @@ PIXI.InteractionManager.prototype.update = function()
     var now = Date.now();
     var diff = now - this.last;
     diff = (diff * 30) / 1000;
-    if(diff < 1)return;
+    if (diff < 1) return;
     this.last = now;
     //
+
+    var i, l;
 
     // ok.. so mouse events??
     // yes for now :)
@@ -208,15 +209,13 @@ PIXI.InteractionManager.prototype.update = function()
     {
         this.dirty = false;
 
-        var len = this.interactiveItems.length;
-
-        for (var i=0; i < len; i++) {
-          this.interactiveItems[i].interactiveChildren = false;
+        for (i = 0, l = this.interactiveItems.length; i < l; i++) {
+            this.interactiveItems[i].interactiveChildren = false;
         }
 
         this.interactiveItems = [];
 
-        if(this.stage.interactive)this.interactiveItems.push(this.stage);
+        if (this.stage.interactive) this.interactiveItems.push(this.stage);
         // go through and collect all the objects that are interactive..
         this.collectInteractiveSprite(this.stage, this.stage);
     }
@@ -226,7 +225,9 @@ PIXI.InteractionManager.prototype.update = function()
 
     this.interactionDOMElement.style.cursor = "default";
 
-    for (var i = 0; i < length; i++)
+
+    // loop through interactive objects!
+    for (i = 0, l = this.interactiveItems.length; i < l; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -287,16 +288,10 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
     this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
 
-    var length = this.interactiveItems.length;
-    var global = this.mouse.global;
-
-
-    for (var i = 0; i < length; i++)
+    for (var i = 0, l = this.interactiveItems.length; i < l; i++)
     {
         var item = this.interactiveItems[i];
-
-        if(item.mousemove)
-        {
+        if (item.mousemove) {
             //call the function!
             item.mousemove(this.mouse);
         }
@@ -318,15 +313,12 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     // hit test each item! ->
     // get interactive items under point??
     //stage.__i
-    var length = this.interactiveItems.length;
-    var global = this.mouse.global;
-
     var index = 0;
     var parent = this.stage;
 
     // while
     // hit test
-    for (var i = 0; i < length; i++)
+    for (var i = 0, l = this.interactiveItems.length; i < l; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -355,7 +347,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 
     this.interactionDOMElement.style.cursor = "default";
 
-    for (var i = 0; i < length; i++)
+    for (var i = 0, l = this.interactiveItems.length; i < l; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -379,13 +371,9 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
-    var global = this.mouse.global;
-
-
-    var length = this.interactiveItems.length;
     var up = false;
 
-    for (var i = 0; i < length; i++)
+    for (var i = 0, l = this.interactiveItems.length; i < l; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -476,9 +464,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
         }
     }
 
-    var length = item.children.length;
-
-    for (var i = 0; i < length; i++)
+    for (var i = 0, l = item.children.length; i < l; i++)
     {
         var tempItem = item.children[i];
         var hit = this.hitTest(tempItem, interactionData);
@@ -502,25 +488,25 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-    var rect = this.interactionDOMElement.getBoundingClientRect();
-    var changedTouches = event.changedTouches;
+    var rect = this.interactionDOMElement.getBoundingClientRect(),
+        changedTouches = event.changedTouches,
+        i, l, touchEvent, touchData, item;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (i = 0, l = changedTouches.length; i < l; i++)
     {
-        var touchEvent = changedTouches[i];
-        var touchData = this.touchs[touchEvent.identifier];
+        touchEvent = changedTouches[i];
+        touchData = this.touchs[touchEvent.identifier];
         touchData.originalEvent =  event || window.event;
 
         // update the touch position
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-    }
 
-    var length = this.interactiveItems.length;
-    for (var i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-        if(item.touchmove)item.touchmove(touchData);
+        for (ii = 0, ll = this.interactiveItems.length; ii < ll; ii++)
+        {
+            item = this.interactiveItems[i];
+            if (item.touchmove) item.touchmove(touchData);
+        }
     }
 }
 
@@ -533,15 +519,15 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-    var rect = this.interactionDOMElement.getBoundingClientRect();
+    var rect = this.interactionDOMElement.getBoundingClientRect(),
+        changedTouches = event.changedTouches;
 
-    var changedTouches = event.changedTouches;
-    for (var i=0; i < changedTouches.length; i++)
+    for (var i = 0, l = changedTouches.length; i < l; i++)
     {
         var touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
-        if(!touchData)touchData = new PIXI.InteractionData();
+        if (!touchData) touchData = new PIXI.InteractionData();
 
         touchData.originalEvent =  event || window.event;
 
@@ -549,20 +535,18 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
 
-        var length = this.interactiveItems.length;
-
-        for (var j = 0; j < length; j++)
+        for (var ii = 0, ll = this.interactiveItems.length; ii < ll; ii++)
         {
-            var item = this.interactiveItems[j];
+            var item = this.interactiveItems[ii];
 
-            if(item.touchstart || item.tap)
+            if (item.touchstart || item.tap)
             {
                 item.__hit = this.hitTest(item, touchData);
 
-                if(item.__hit)
+                if (item.__hit)
                 {
                     //call the function!
-                    if(item.touchstart)item.touchstart(touchData);
+                    if (item.touchstart) item.touchstart(touchData);
                     item.__isDown = true;
                     item.__touchData = touchData;
 
@@ -583,10 +567,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
     //this.mouse.originalEvent = event || window.event; //IE uses window.event
-    var rect = this.interactionDOMElement.getBoundingClientRect();
-    var changedTouches = event.changedTouches;
+    var rect = this.interactionDOMElement.getBoundingClientRect(),
+        changedTouches = event.changedTouches;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var i = 0, l = changedTouches.length; i < l; i++)
     {
         var touchEvent = changedTouches[i];
         var touchData = this.touchs[touchEvent.identifier];
@@ -594,10 +578,9 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
 
-        var length = this.interactiveItems.length;
-        for (var j = 0; j < length; j++)
+        for (var ii = 0, ll = this.interactiveItems.length; ii < ll; ii++)
         {
-            var item = this.interactiveItems[j];
+            var item = this.interactiveItems[ii];
             var itemTouchData = item.__touchData; // <-- Here!
             item.__hit = this.hitTest(item, touchData);
 
@@ -631,11 +614,6 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                 }
 
                 item.__touchData = null;
-
-            }
-            else
-            {
-
             }
         }
         // remove the touch..
@@ -669,7 +647,7 @@ PIXI.InteractionData = function()
      * @property target
      * @type Sprite
      */
-    this.target;
+    this.target = null;
 
     /**
      * When passed to an event handler, this will be the original DOM Event that was captured
@@ -677,7 +655,7 @@ PIXI.InteractionData = function()
      * @property originalEvent
      * @type Event
      */
-    this.originalEvent;
+    this.originalEvent = null;
 }
 
 /**

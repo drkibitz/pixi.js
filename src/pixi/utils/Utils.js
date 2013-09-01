@@ -19,8 +19,8 @@ var lastTime = 0;
 var vendors = ['ms', 'moz', 'webkit', 'o'];
 for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
     window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-                               || window[vendors[x]+'CancelRequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] ||
+        window[vendors[x]+'CancelRequestAnimationFrame'];
 }
 
 if (!window.requestAnimationFrame)
@@ -69,8 +69,8 @@ if (typeof Function.prototype.bind != 'function') {
       }
 
       bound.prototype = (function F(proto) {
-          proto && (F.prototype = proto);
-          if (!(this instanceof F)) return new F;
+          if (proto) F.prototype = proto;
+          if (!(this instanceof F)) return new F();
     })(target.prototype);
 
       return bound;

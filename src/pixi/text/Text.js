@@ -223,7 +223,7 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 PIXI.Text.prototype.wordWrap = function(text)
 {
     // search good wrap position
-    var searchWrapPos = function(ctx, text, start, end, wrapWidth)
+    function searchWrapPos(ctx, text, start, end, wrapWidth)
     {
         var p = Math.floor((end-start) / 2) + start;
         if(p == start) {
@@ -238,24 +238,24 @@ PIXI.Text.prototype.wordWrap = function(text)
             }
             else
             {
-                return arguments.callee(ctx, text, p, end, wrapWidth);
+                return searchWrapPos(ctx, text, p, end, wrapWidth);
             }
         }
         else
         {
-            return arguments.callee(ctx, text, start, p, wrapWidth);
+            return searchWrapPos(ctx, text, start, p, wrapWidth);
         }
-    };
+    }
 
-    var lineWrap = function(ctx, text, wrapWidth)
+    function lineWrap(ctx, text, wrapWidth)
     {
         if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
         {
             return text;
         }
         var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-        return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
-    };
+        return text.substring(0, pos) + "\n" + lineWrap(ctx, text.substring(pos), wrapWidth);
+    }
 
     var result = "";
     var lines = text.split("\n");

@@ -117,7 +117,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
         {
             PIXI.WebGLGraphics.buildCircle(data, graphics._webGL);
         }
-    };
+    }
 
     graphics._webGL.lastIndex = graphics.graphicsData.length;
 
@@ -221,8 +221,9 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
     var totalSegs = 40;
     var seg = (Math.PI * 2) / totalSegs ;
+    var i;
 
-    if(graphicsData.fill)
+    if (graphicsData.fill)
     {
         var color = HEXtoRGB(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
@@ -238,7 +239,7 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
         indices.push(vecPos);
 
-        for (var i=0; i < totalSegs + 1 ; i++)
+        for (i = 0; i < totalSegs + 1 ; i++)
         {
             verts.push(x,y, r, g, b, alpha);
 
@@ -247,20 +248,20 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
                        r, g, b, alpha);
 
             indices.push(vecPos++, vecPos++);
-        };
+        }
 
         indices.push(vecPos-1);
     }
 
-    if(graphicsData.lineWidth)
+    if (graphicsData.lineWidth)
     {
         graphicsData.points = [];
 
-        for (var i=0; i < totalSegs + 1; i++)
+        for (i = 0; i < totalSegs + 1; i++)
         {
             graphicsData.points.push(x + Math.sin(seg * i) * width,
                                      y + Math.cos(seg * i) * height)
-        };
+        }
 
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
     }
@@ -282,14 +283,14 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
     var wrap = true;
     var points = graphicsData.points;
-    if(points.length == 0)return;
+    if (points.length === 0) return;
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );
     var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
 
     // if the first point is the last point - goona have issues :)
-    if(firstPoint.x == lastPoint.x && firstPoint.y == lastPoint.y)
+    if (firstPoint.x == lastPoint.x && firstPoint.y == lastPoint.y)
     {
         points.pop();
         points.pop();
@@ -386,7 +387,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
         denom = a1*b2 - a2*b1;
 
-        if (denom == 0) {
+        if (denom === 0) {
             denom+=1;
         }
 
@@ -450,10 +451,10 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
     indices.push(indexStart);
 
-    for (var i=0; i < indexCount; i++)
+    for (i = 0; i < indexCount; i++)
     {
         indices.push(indexStart++);
-    };
+    }
 
     indices.push(indexStart-1);
 }
@@ -470,13 +471,23 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 {
     var points = graphicsData.points;
-    if(points.length < 6)return;
+    if (points.length < 6) return;
 
     // get first and last point.. figure out the middle!
     var verts = webGLData.points;
     var indices = webGLData.indices;
 
-    var length = points.length / 2;
+    var triangles = PIXI.PolyK.Triangulate(points);
+    var vertPos = verts.length / 6;
+
+    for (var i = 0, l = triangles.length; i < l; i+=3)
+    {
+        indices.push(triangles[i] + vertPos);
+        indices.push(triangles[i] + vertPos);
+        indices.push(triangles[i+1] + vertPos);
+        indices.push(triangles[i+2] +vertPos);
+        indices.push(triangles[i+2] + vertPos);
+    }
 
     // sort color
     var color = HEXtoRGB(graphicsData.fillColor);
@@ -485,30 +496,11 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
     var g = color[1] * alpha;
     var b = color[2] * alpha;
 
-    var triangles = PIXI.PolyK.Triangulate(points);
-
-    var vertPos = verts.length / 6;
-
-    for (var i=0; i < triangles.length; i+=3)
-    {
-        indices.push(triangles[i] + vertPos);
-        indices.push(triangles[i] + vertPos);
-        indices.push(triangles[i+1] + vertPos);
-        indices.push(triangles[i+2] +vertPos);
-        indices.push(triangles[i+2] + vertPos);
-    };
-
-    for (var i = 0; i < length; i++)
+    for (i = 0, l = points.length / 2; i < l; i++)
     {
         verts.push(points[i * 2], points[i * 2 + 1],
                    r, g, b, alpha);
-    };
+    }
 }
-
-function HEXtoRGB(hex) {
-    return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
-}
-
-
 
 

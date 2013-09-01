@@ -9,14 +9,7 @@ PIXI._batchs = [];
  */
 PIXI._getBatch = function(gl)
 {
-    if(PIXI._batchs.length == 0)
-    {
-        return new PIXI.WebGLBatch(gl);
-    }
-    else
-    {
-        return PIXI._batchs.pop();
-    }
+    return PIXI._batchs.length ? new PIXI.WebGLBatch(gl) : PIXI._batchs.pop();
 }
 
 /**
@@ -33,10 +26,10 @@ PIXI._returnBatch = function(batch)
  */
 PIXI._restoreBatchs = function(gl)
 {
-    for (var i=0; i < PIXI._batchs.length; i++)
+    for (var i = 0, l = PIXI._batchs.length; i < l; i++)
     {
-      PIXI._batchs[i].restoreLostContext(gl);
-    };
+        PIXI._batchs[i].restoreLostContext(gl);
+    }
 }
 
 /**
@@ -83,8 +76,8 @@ PIXI.WebGLBatch.prototype.clean = function()
     this.texture = null;
     this.last = null;
     this.size = 0;
-    this.head;
-    this.tail;
+    this.head = null;
+    this.tail = null;
 }
 
 /**
@@ -189,7 +182,7 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
 {
     this.size--;
 
-    if(this.size == 0)
+    if (!this.size)
     {
         sprite.batch = null;
         sprite.__prev = null;
@@ -326,9 +319,8 @@ PIXI.WebGLBatch.prototype.growBatch = function()
     this.dirtyColors = true;
 
     this.indices = new Uint16Array(this.dynamicSize * 6);
-    var length = this.indices.length/6;
 
-    for (var i=0; i < length; i++)
+    for (var i = 0, l = this.indices.length/6; i < l; i++)
     {
         var index2 = i * 6;
         var index3 = i * 4;
@@ -338,7 +330,7 @@ PIXI.WebGLBatch.prototype.growBatch = function()
         this.indices[index2 + 3] = index3 + 0;
         this.indices[index2 + 4] = index3 + 2;
         this.indices[index2 + 5] = index3 + 3;
-    };
+    }
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
@@ -521,7 +513,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 {
     start = start || 0;
 
-    if(end == undefined)end = this.size;
+    if (arguments.length < 2) end = this.size;
 
     if(this.dirty)
     {
@@ -529,7 +521,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
         this.dirty = false;
     }
 
-    if (this.size == 0)return;
+    if (!this.size) return;
 
     this.update();
     var gl = this.gl;

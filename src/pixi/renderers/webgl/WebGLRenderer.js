@@ -6,7 +6,7 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
 
 // an instance of the gl context..
 // only one at the moment :/
-PIXI.gl;
+PIXI.gl = null;
 
 /**
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
@@ -94,7 +94,7 @@ PIXI.WebGLRenderer.prototype.constructor = PIXI.WebGLRenderer;
  */
 PIXI.WebGLRenderer.getBatch = function()
 {
-    if(PIXI._batchs.length == 0)
+    if(!PIXI._batchs.length)
     {
         return new PIXI.WebGLBatch(PIXI.WebGLRenderer.gl);
     }
@@ -185,10 +185,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // after rendering lets confirm all frames that have been uodated..
     if(PIXI.Texture.frameUpdates.length > 0)
     {
-        for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
+        for (var i = 0, l = PIXI.Texture.frameUpdates.length; i < l; i++)
         {
             PIXI.Texture.frameUpdates[i].updateFrame = false;
-        };
+        }
 
         PIXI.Texture.frameUpdates = [];
     }
@@ -204,8 +204,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.updateTextures = function()
 {
     //TODO break this out into a texture manager...
-    for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
-    for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
+    for (var i = 0, l = PIXI.texturesToUpdate.length; i < l; i++)
+        PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+    for (i = 0, l = PIXI.texturesToDestroy.length; i < l; i++)
+        PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
     PIXI.texturesToUpdate = [];
     PIXI.texturesToDestroy = [];
 }
@@ -334,13 +336,13 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
             var texture = PIXI.TextureCache[key].baseTexture;
             texture._glTexture = null;
             PIXI.WebGLRenderer.updateTexture(texture);
-    };
+    }
 
-    for (var i=0; i <  this.batchs.length; i++)
+    for (var i = 0, l = this.batchs.length; i < l; i++)
     {
         this.batchs[i].restoreLostContext(this.gl)//
         this.batchs[i].dirty = true;
-    };
+    }
 
     PIXI._restoreBatchs(this.gl);
 

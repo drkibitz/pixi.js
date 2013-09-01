@@ -50,7 +50,7 @@ PIXI.PolyK.Triangulate = function(p)
     var avl = [];
     for(var i=0; i<n; i++) avl.push(i);
 
-    var i = 0;
+    i = 0;
     var al = n;
     while(al > 3)
     {
@@ -86,9 +86,9 @@ PIXI.PolyK.Triangulate = function(p)
             // reset!
             if(sign)
             {
-                var tgs = [];
+                tgs = [];
                 avl = [];
-                for(var i=0; i<n; i++) avl.push(i);
+                for(i=0; i<n; i++) avl.push(i);
 
                 i = 0;
                 al = n;
