@@ -1,10 +1,12 @@
+'use strict';
+
 module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+    grunt.loadTasks('tasks');
 
     var root = 'src/pixi/',
         debug = 'bin/pixi.dev.js',
@@ -128,24 +130,11 @@ module.exports = function(grunt) {
             ]
         },
         connect: {
-            qunit: {
-                options: {
-                    port: grunt.option('port-test') || 9002,
-                    base: './'
-                }
-            },
             test: {
                 options: {
                     port: grunt.option('port-test') || 9002,
                     base: './',
                     keepalive: true
-                }
-            }
-        },
-        qunit: {
-            all: {
-                options: {
-                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/test/index.html']
                 }
             }
         },
@@ -160,6 +149,13 @@ module.exports = function(grunt) {
                     paths: '<%= dirs.src %>',
                     outdir: '<%= dirs.docs %>'
                 }
+            }
+        },
+        karma: {
+            unit: {
+                configFile: 'test/karma.conf.js',
+                // browsers: ['Chrome'],
+                singleRun: true
             }
         }
     });
@@ -182,9 +178,10 @@ module.exports = function(grunt) {
         }
     )
 
-    grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
     grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
+    grunt.registerTask('test', ['concat', 'karma']);
     grunt.registerTask('docs', ['yuidoc']);
-
+    grunt.registerTask('default', ['test', 'uglify', 'distribute']);
+    // Travis CI task.
+    grunt.registerTask('travis', ['test']);
 }
