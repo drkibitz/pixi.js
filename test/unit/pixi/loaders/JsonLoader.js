@@ -1,9 +1,9 @@
-describe('Strip', function () {
+describe('JsonLoader', function () {
     'use strict';
 
     var expect = chai.expect;
 
     it('Class exists', function () {
-        expect(typeof PIXI.Strip).to.equal('function');
+        expect(typeof PIXI.JsonLoader).to.equal('function');
     });
 });

@@ -1,9 +1,9 @@
-describe('Strip', function () {
+describe('Spine', function () {
     'use strict';
 
     var expect = chai.expect;
 
     it('Class exists', function () {
-        expect(typeof PIXI.Strip).to.equal('function');
+        expect(typeof PIXI.Spine).to.equal('function');
     });
 });
