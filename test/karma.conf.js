@@ -12,8 +12,8 @@ module.exports = function(config) {
 			'bin/pixi.dev.js',
 			'test/lib/**/*.js',
 			'test/unit/**/*.js',
-			'test/functional/**/*.js',
-			{pattern: 'test/functional/**/*.png', watched: false, included: false, served: true}
+			// 'test/functional/**/*.js',
+			// {pattern: 'test/functional/**/*.png', watched: false, included: false, served: true}
 		],
 
 		// list of files to exclude
