@@ -81,7 +81,7 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/unit/**/*.js',
+            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -96,7 +96,12 @@ module.exports = function(grunt) {
         },
         jshint: {
             beforeconcat: srcFiles,
-            test: ['<%= files.testBlob %>'],
+            test: {
+                src: ['<%= files.testBlob %>'],
+                options: {
+                    expr: true
+                }
+            },
             options: {
                 asi: true,
                 smarttabs: true
@@ -179,7 +184,7 @@ module.exports = function(grunt) {
     )
 
     grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('test', ['concat', 'karma']);
+    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
     grunt.registerTask('docs', ['yuidoc']);
     grunt.registerTask('default', ['test', 'uglify', 'distribute']);
     // Travis CI task.
