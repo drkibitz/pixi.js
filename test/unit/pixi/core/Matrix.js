@@ -7,7 +7,7 @@ describe('Matrix', function () {
         expect(typeof PIXI.Matrix).to.equal('function');
     });
 
-    it('mat3 amespace exists', function () {
+    it('mat3 namespace exists', function () {
         expect(typeof PIXI.mat3).to.equal('object');
     });
 
