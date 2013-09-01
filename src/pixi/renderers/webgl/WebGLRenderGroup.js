@@ -18,9 +18,8 @@
 PIXI.WebGLRenderGroup = function(gl)
 {
     this.gl = gl;
-    this.root;
-
-    this.backgroundColor;
+    this.root = null;
+    // this.backgroundColor = null;
     this.batchs = [];
     this.toRemove = [];
 }
@@ -153,11 +152,9 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
     // to do!
     // render part of the scene...
 
-    var startIndex;
-    var startBatchIndex;
-
-    var endIndex;
-    var endBatchIndex;
+    var startIndex, startBatchIndex,
+        endIndex, endBatchIndex,
+        head, next;
 
     /*
      *  LOOK FOR THE NEXT SPRITE
@@ -177,8 +174,8 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
     {
         startBatch = nextRenderable.batch;
 
-        var head = startBatch.head;
-        var next = head;
+        head = startBatch.head;
+        next = head;
 
         // ok now we have the batch.. need to find the start index!
         if(head == nextRenderable)
@@ -215,7 +212,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
     {
         endBatch = lastRenderable.batch;
 
-        var head = endBatch.head;
+        head = endBatch.head;
 
         if(head == lastRenderable)
         {
@@ -537,8 +534,9 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
 {
     // while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
-    var previousSprite = previousObject;
-    var nextSprite = nextObject;
+    var previousSprite = previousObject,
+        nextSprite = nextObject,
+        batch, index;
 
     /*
      * so now we have the next renderable and the previous renderable
@@ -546,8 +544,7 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
      */
     if(displayObject instanceof PIXI.Sprite)
     {
-        var previousBatch
-        var nextBatch
+        var previousBatch, nextBatch;
 
         if(previousSprite instanceof PIXI.Sprite)
         {
@@ -594,11 +591,11 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
                              * seems the new sprite is in the middle of a batch
                              * lets split it..
                              */
-                            var batch = PIXI.WebGLRenderer.getBatch();
+                            batch = PIXI.WebGLRenderer.getBatch();
 
-                            var index = this.batchs.indexOf( previousBatch );
+                            index = this.batchs.indexOf( previousBatch );
                             batch.init(displayObject);
-                            this.batchs.splice(index+1, 0, batch, splitBatch);
+                            this.batchs.splice(index + 1, 0, batch, splitBatch);
 
                             return;
                         }
@@ -619,13 +616,13 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
          * time to create anew one!
          */
 
-        var batch =  PIXI.WebGLRenderer.getBatch();
+        batch = PIXI.WebGLRenderer.getBatch();
         batch.init(displayObject);
 
         if(previousBatch) // if this is invalid it means
         {
-            var index = this.batchs.indexOf( previousBatch );
-            this.batchs.splice(index+1, 0, batch);
+            index = this.batchs.indexOf( previousBatch );
+            this.batchs.splice(index + 1, 0, batch);
         }
         else
         {
@@ -648,14 +645,14 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
         this.initStrip(displayObject);
     //  this.batchs.push(displayObject);
     }
-    else if(displayObject)// instanceof PIXI.Graphics)
+    /*else if(displayObject)// instanceof PIXI.Graphics)
     {
         //displayObject.initWebGL(this);
 
         // add to a batch!!
         //this.initStrip(displayObject);
         //this.batchs.push(displayObject);
-    }
+    }*/
 
     this.insertAfter(displayObject, previousSprite);
 
@@ -673,9 +670,11 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
  */
 PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
 {
+    var previousBatch, splitBatch, index;
+
     if(displayObject instanceof PIXI.Sprite)
     {
-        var previousBatch = displayObject.batch;
+        previousBatch = displayObject.batch;
 
         if(previousBatch)
         {
@@ -685,7 +684,7 @@ PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
             if(previousBatch.tail == displayObject)
             {
                 // is it tail? insert in to batchs
-                var index = this.batchs.indexOf( previousBatch );
+                index = this.batchs.indexOf( previousBatch );
                 this.batchs.splice(index+1, 0, item);
             }
             else
@@ -693,7 +692,7 @@ PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
                 // TODO MODIFY ADD / REMOVE CHILD TO ACCOUNT FOR FILTERS (also get prev and next) //
 
                 // THERE IS A SPLIT IN THIS BATCH! //
-                var splitBatch = previousBatch.split(displayObject.__next);
+                splitBatch = previousBatch.split(displayObject.__next);
 
                 // COOL!
                 // add it back into the array
@@ -702,8 +701,8 @@ PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
                  * seems the new sprite is in the middle of a batch
                  * lets split it..
                  */
-                var index = this.batchs.indexOf( previousBatch );
-                this.batchs.splice(index+1, 0, item, splitBatch);
+                index = this.batchs.indexOf( previousBatch );
+                this.batchs.splice(index + 1, 0, item, splitBatch);
             }
         }
         else
@@ -713,8 +712,8 @@ PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
     }
     else
     {
-        var index = this.batchs.indexOf( displayObject );
-        this.batchs.splice(index+1, 0, item);
+        index = this.batchs.indexOf( displayObject );
+        this.batchs.splice(index + 1, 0, item);
     }
 }
 
@@ -738,9 +737,9 @@ PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
      * removing is a lot quicker..
      *
      */
-    var batchToRemove;
+    var batchToRemove, index;
 
-    if(displayObject instanceof PIXI.Sprite)
+    if (displayObject instanceof PIXI.Sprite)
     {
         // should always have a batch!
         var batch = displayObject.batch;
@@ -748,7 +747,7 @@ PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 
         batch.remove(displayObject);
 
-        if(batch.size==0)
+        if (!batch.size)
         {
             batchToRemove = batch;
         }
@@ -763,12 +762,12 @@ PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
      */
     if(batchToRemove)
     {
-        var index = this.batchs.indexOf( batchToRemove );
-        if(index == -1)return;// this means it was added then removed before rendered
+        index = this.batchs.indexOf( batchToRemove );
+        if (index === -1) return;// this means it was added then removed before rendered
 
         // ok so.. check to see if you adjacent batchs should be joined.
         // TODO may optimise?
-        if(index == 0 || index == this.batchs.length-1)
+        if (index === 0 || index === this.batchs.length - 1)
         {
             // wha - eva! just get of the empty batch!
             this.batchs.splice(index, 1);
@@ -777,15 +776,15 @@ PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
             return;
         }
 
-        if(this.batchs[index-1] instanceof PIXI.WebGLBatch && this.batchs[index+1] instanceof PIXI.WebGLBatch)
+        if(this.batchs[index - 1] instanceof PIXI.WebGLBatch && this.batchs[index + 1] instanceof PIXI.WebGLBatch)
         {
-            if(this.batchs[index-1].texture == this.batchs[index+1].texture && this.batchs[index-1].blendMode == this.batchs[index+1].blendMode)
+            if(this.batchs[index - 1].texture == this.batchs[index + 1].texture && this.batchs[index - 1].blendMode == this.batchs[index + 1].blendMode)
             {
                 //console.log("MERGE")
-                this.batchs[index-1].merge(this.batchs[index+1]);
+                this.batchs[index - 1].merge(this.batchs[index + 1]);
 
                 if(batchToRemove instanceof PIXI.WebGLBatch)PIXI.WebGLRenderer.returnBatch(batchToRemove);
-                PIXI.WebGLRenderer.returnBatch(this.batchs[index+1]);
+                PIXI.WebGLRenderer.returnBatch(this.batchs[index + 1]);
                 this.batchs.splice(index, 2);
                 return;
             }

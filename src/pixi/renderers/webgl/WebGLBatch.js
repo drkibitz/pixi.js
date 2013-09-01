@@ -74,7 +74,6 @@ PIXI.WebGLBatch.prototype.clean = function()
     this.colors = [];
     this.dynamicSize = 1;
     this.texture = null;
-    this.last = null;
     this.size = 0;
     this.head = null;
     this.tail = null;

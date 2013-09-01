@@ -267,7 +267,7 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
         context.lineTo(x1, y1);
         context.lineTo(x2, y2);
 
-    };
+    }
 
     context.fillStyle = "#FF0000";
     context.fill();
@@ -365,6 +365,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 
         context.drawImage(strip.texture.baseTexture.source, 0, 0);
         context.restore();
-    };
+    }
 
 }

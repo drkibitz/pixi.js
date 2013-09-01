@@ -80,9 +80,13 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
+    function onLoad() {
+        scope.onAssetLoaded();
+    }
+
     this.loadCount = this.assetURLs.length;
 
-    for (var i=0; i < this.assetURLs.length; i++)
+    for (var i = 0, l = this.assetURLs.length; i < l; i++)
     {
         var fileName = this.assetURLs[i];
         var fileType = fileName.split(".").pop().toLowerCase();
@@ -93,10 +97,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new loaderClass(fileName, this.crossorigin);
 
-        loader.addEventListener("loaded", function()
-        {
-            scope.onAssetLoaded();
-        });
+        loader.addEventListener("loaded", onLoad);
         loader.load();
     }
 };
@@ -111,9 +112,9 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
     this.dispatchEvent({type: "onProgress", content: this});
-    if(this.onProgress) this.onProgress();
+    if (this.onProgress) this.onProgress();
 
-    if(this.loadCount == 0)
+    if (!this.loadCount)
     {
         this.dispatchEvent({type: "onComplete", content: this});
         if(this.onComplete) this.onComplete();

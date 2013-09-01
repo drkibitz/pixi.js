@@ -7,122 +7,6 @@
  *
  */
 
-/**
- * A class that enables the you to import and run your spine animations in pixi.
- * Spine animation data needs to be loaded using the PIXI.AssetLoader or PIXI.SpineLoader before it can be used by this class
- * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
- *
- * @class Spine
- * @extends DisplayObjectContainer
- * @constructor
- * @param url {String} The url of the spine anim file to be used
- */
-PIXI.Spine = function (url) {
-    PIXI.DisplayObjectContainer.call(this);
-
-    this.spineData = PIXI.AnimCache[url];
-
-    if (!this.spineData) {
-        throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
-    }
-
-    this.skeleton = new spine.Skeleton(this.spineData);
-    this.skeleton.updateWorldTransform();
-
-    this.stateData = new spine.AnimationStateData(this.spineData);
-    this.state = new spine.AnimationState(this.stateData);
-
-    this.slotContainers = [];
-
-    for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
-        var slot = this.skeleton.drawOrder[i];
-        var attachment = slot.attachment;
-        var slotContainer = new PIXI.DisplayObjectContainer();
-        this.slotContainers.push(slotContainer);
-        this.addChild(slotContainer);
-        if (!(attachment instanceof spine.RegionAttachment)) {
-            continue;
-        }
-        var spriteName = attachment.rendererObject.name;
-        var sprite = this.createSprite(slot, attachment.rendererObject);
-        slot.currentSprite = sprite;
-        slot.currentSpriteName = spriteName;
-        slotContainer.addChild(sprite);
-    }
-};
-
-PIXI.Spine.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-PIXI.Spine.prototype.constructor = PIXI.Spine;
-
-/*
- * Updates the object transform for rendering
- *
- * @method updateTransform
- * @private
- */
-PIXI.Spine.prototype.updateTransform = function () {
-    this.lastTime = this.lastTime || Date.now();
-    var timeDelta = (Date.now() - this.lastTime) * 0.001;
-    this.lastTime = Date.now();
-    this.state.update(timeDelta);
-    this.state.apply(this.skeleton);
-    this.skeleton.updateWorldTransform();
-
-    var drawOrder = this.skeleton.drawOrder;
-    for (var i = 0, n = drawOrder.length; i < n; i++) {
-        var slot = drawOrder[i];
-        var attachment = slot.attachment;
-        var slotContainer = this.slotContainers[i];
-        if (!(attachment instanceof spine.RegionAttachment)) {
-            slotContainer.visible = false;
-            continue;
-        }
-
-        if (attachment.rendererObject) {
-            if (!slot.currentSpriteName || slot.currentSpriteName != attachment.name) {
-                var spriteName = attachment.rendererObject.name;
-                if (slot.currentSprite !== undefined) {
-                    slot.currentSprite.visible = false;
-                }
-                slot.sprites = slot.sprites || {};
-                if (slot.sprites[spriteName] !== undefined) {
-                    slot.sprites[spriteName].visible = true;
-                } else {
-                    var sprite = this.createSprite(slot, attachment.rendererObject);
-                    slotContainer.addChild(sprite);
-                }
-                slot.currentSprite = slot.sprites[spriteName];
-                slot.currentSpriteName = spriteName;
-            }
-        }
-        slotContainer.visible = true;
-
-        var bone = slot.bone;
-
-        slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
-        slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
-        slotContainer.scale.x = bone.worldScaleX;
-        slotContainer.scale.y = bone.worldScaleY;
-
-        slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
-    }
-
-    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
-};
-
-
-PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
-    var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
-    var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(name));
-    sprite.scale = descriptor.scale;
-    sprite.rotation = descriptor.rotation;
-    sprite.anchor.x = sprite.anchor.y = 0.5;
-
-    slot.sprites = slot.sprites || {};
-    slot.sprites[descriptor.name] = sprite;
-    return sprite;
-};
-
 /*
  * Awesome JS run time provided by EsotericSoftware
  *
@@ -262,7 +146,7 @@ spine.Skin.prototype = {
     _attachAll: function (skeleton, oldSkin) {
         for (var key in oldSkin.attachments) {
             var colon = key.indexOf(":");
-            var slotIndex = parseInt(key.substring(0, colon));
+            var slotIndex = parseInt(key.substring(0, colon), 10);
             var name = key.substring(colon + 1);
             var slot = skeleton.slots[slotIndex];
             if (slot.attachment && slot.attachment.name == name) {
@@ -280,13 +164,13 @@ spine.Animation = function (name, timelines, duration) {
 };
 spine.Animation.prototype = {
     apply: function (skeleton, time, loop) {
-        if (loop && this.duration != 0) time %= this.duration;
+        if (loop && this.duration) time %= this.duration;
         var timelines = this.timelines;
         for (var i = 0, n = timelines.length; i < n; i++)
             timelines[i].apply(skeleton, time, 1);
     },
     mix: function (skeleton, time, loop, alpha) {
-        if (loop && this.duration != 0) time %= this.duration;
+        if (loop && this.duration) time %= this.duration;
         var timelines = this.timelines;
         for (var i = 0, n = timelines.length; i < n; i++)
             timelines[i].apply(skeleton, time, alpha);
@@ -296,7 +180,7 @@ spine.Animation.prototype = {
 spine.binarySearch = function (values, target, step) {
     var low = 0;
     var high = Math.floor(values.length / step) - 2;
-    if (high == 0) return step;
+    if (!high) return step;
     var current = high >>> 1;
     while (true) {
         if (values[(current + 1) * step] <= target)
@@ -368,7 +252,7 @@ spine.Curves.prototype = {
                 var lastY = y - dfy;
                 return lastY + (y - lastY) * (percent - lastX) / (x - lastX);
             }
-            if (i == 0) break;
+            if (!i) break;
             i--;
             dfx += ddfx;
             dfy += ddfy;
@@ -397,13 +281,15 @@ spine.RotateTimeline.prototype = {
         this.frames[frameIndex + 1] = angle;
     },
     apply: function (skeleton, time, alpha) {
-        var frames = this.frames;
+        var frames = this.frames,
+            amount;
+
         if (time < frames[0]) return; // Time is before first frame.
 
         var bone = skeleton.bones[this.boneIndex];
 
         if (time >= frames[frames.length - 2]) { // Time is after last frame.
-            var amount = bone.data.rotation + frames[frames.length - 1] - bone.rotation;
+            amount = bone.data.rotation + frames[frames.length - 1] - bone.rotation;
             while (amount > 180)
                 amount -= 360;
             while (amount < -180)
@@ -419,7 +305,7 @@ spine.RotateTimeline.prototype = {
         var percent = 1 - (time - frameTime) / (frames[frameIndex - 2/*LAST_FRAME_TIME*/] - frameTime);
         percent = this.curves.getCurvePercent(frameIndex / 2 - 1, percent);
 
-        var amount = frames[frameIndex + 1/*FRAME_VALUE*/] - lastFrameValue;
+        amount = frames[frameIndex + 1/*FRAME_VALUE*/] - lastFrameValue;
         while (amount > 180)
             amount -= 360;
         while (amount < -180)
@@ -672,7 +558,7 @@ spine.Skeleton = function (skeletonData) {
 
     this.slots = [];
     this.drawOrder = [];
-    for (var i = 0, n = skeletonData.slots.length; i < n; i++) {
+    for (i = 0, n = skeletonData.slots.length; i < n; i++) {
         var slotData = skeletonData.slots[i];
         var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
         var slot = new spine.Slot(slotData, this, bone);
@@ -711,7 +597,7 @@ spine.Skeleton.prototype = {
     },
     /** @return May return null. */
     getRootBone: function () {
-        return this.bones.length == 0 ? null : this.bones[0];
+        return this.bones.length ? this.bones[0] : null;
     },
     /** @return May be null. */
     findBone: function (boneName) {
@@ -983,7 +869,7 @@ spine.AnimationState.prototype = {
         entry.loop = loop;
 
         if (!delay || delay <= 0) {
-            var previousAnimation = this.queue.length == 0 ? this.current : this.queue[this.queue.length - 1].animation;
+            var previousAnimation = this.queue.length ? this.queue[this.queue.length - 1].animation : this.current;
             if (previousAnimation != null)
                 delay = previousAnimation.duration - this.data.getMix(previousAnimation, animation) + (delay || 0);
             else
@@ -1005,7 +891,8 @@ spine.SkeletonJson = function (attachmentLoader) {
 spine.SkeletonJson.prototype = {
     scale: 1,
     readSkeletonData: function (root) {
-        var skeletonData = new spine.SkeletonData();
+        var skeletonData = new spine.SkeletonData(),
+            boneData;
 
         // Bones.
         var bones = root["bones"];
@@ -1016,7 +903,7 @@ spine.SkeletonJson.prototype = {
                 parent = skeletonData.findBone(boneMap["parent"]);
                 if (!parent) throw "Parent bone not found: " + boneMap["parent"];
             }
-            var boneData = new spine.BoneData(boneMap["name"], parent);
+            boneData = new spine.BoneData(boneMap["name"], parent);
             boneData.length = (boneMap["length"] || 0) * this.scale;
             boneData.x = (boneMap["x"] || 0) * this.scale;
             boneData.y = (boneMap["y"] || 0) * this.scale;
@@ -1028,9 +915,9 @@ spine.SkeletonJson.prototype = {
 
         // Slots.
         var slots = root["slots"];
-        for (var i = 0, n = slots.length; i < n; i++) {
+        for (i = 0, n = slots.length; i < n; i++) {
             var slotMap = slots[i];
-            var boneData = skeletonData.findBone(slotMap["bone"]);
+            boneData = skeletonData.findBone(slotMap["bone"]);
             if (!boneData) throw "Slot bone not found: " + slotMap["bone"];
             var slotData = new spine.SlotData(slotMap["name"], boneData);
 
@@ -1107,6 +994,8 @@ spine.SkeletonJson.prototype = {
     readAnimation: function (name, map, skeletonData) {
         var timelines = [];
         var duration = 0;
+        var frameIndex, timeline, timelineName, valueMap, values,
+            i, n;
 
         var bones = map["bones"];
         for (var boneName in bones) {
@@ -1115,16 +1004,16 @@ spine.SkeletonJson.prototype = {
             if (boneIndex == -1) throw "Bone not found: " + boneName;
             var boneMap = bones[boneName];
 
-            for (var timelineName in boneMap) {
+            for (timelineName in boneMap) {
                 if (!boneMap.hasOwnProperty(timelineName)) continue;
-                var values = boneMap[timelineName];
+                values = boneMap[timelineName];
                 if (timelineName == "rotate") {
-                    var timeline = new spine.RotateTimeline(values.length);
+                    timeline = new spine.RotateTimeline(values.length);
                     timeline.boneIndex = boneIndex;
 
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++) {
-                        var valueMap = values[i];
+                    frameIndex = 0;
+                    for (i = 0, n = values.length; i < n; i++) {
+                        valueMap = values[i];
                         timeline.setFrame(frameIndex, valueMap["time"], valueMap["angle"]);
                         spine.SkeletonJson.readCurve(timeline, frameIndex, valueMap);
                         frameIndex++;
@@ -1133,7 +1022,6 @@ spine.SkeletonJson.prototype = {
                     duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 2 - 2]);
 
                 } else if (timelineName == "translate" || timelineName == "scale") {
-                    var timeline;
                     var timelineScale = 1;
                     if (timelineName == "scale")
                         timeline = new spine.ScaleTimeline(values.length);
@@ -1143,9 +1031,9 @@ spine.SkeletonJson.prototype = {
                     }
                     timeline.boneIndex = boneIndex;
 
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++) {
-                        var valueMap = values[i];
+                    frameIndex = 0;
+                    for (i = 0, n = values.length; i < n; i++) {
+                        valueMap = values[i];
                         var x = (valueMap["x"] || 0) * timelineScale;
                         var y = (valueMap["y"] || 0) * timelineScale;
                         timeline.setFrame(frameIndex, valueMap["time"], x, y);
@@ -1165,16 +1053,16 @@ spine.SkeletonJson.prototype = {
             var slotMap = slots[slotName];
             var slotIndex = skeletonData.findSlotIndex(slotName);
 
-            for (var timelineName in slotMap) {
+            for (timelineName in slotMap) {
                 if (!slotMap.hasOwnProperty(timelineName)) continue;
-                var values = slotMap[timelineName];
+                values = slotMap[timelineName];
                 if (timelineName == "color") {
-                    var timeline = new spine.ColorTimeline(values.length);
+                    timeline = new spine.ColorTimeline(values.length);
                     timeline.slotIndex = slotIndex;
 
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++) {
-                        var valueMap = values[i];
+                    frameIndex = 0;
+                    for (i = 0, n = values.length; i < n; i++) {
+                        valueMap = values[i];
                         var color = valueMap["color"];
                         var r = spine.SkeletonJson.toColor(color, 0);
                         var g = spine.SkeletonJson.toColor(color, 1);
@@ -1188,12 +1076,12 @@ spine.SkeletonJson.prototype = {
                     duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 5 - 5]);
 
                 } else if (timelineName == "attachment") {
-                    var timeline = new spine.AttachmentTimeline(values.length);
+                    timeline = new spine.AttachmentTimeline(values.length);
                     timeline.slotIndex = slotIndex;
 
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++) {
-                        var valueMap = values[i];
+                    frameIndex = 0;
+                    for (i = 0, n = values.length; i < n; i++) {
+                        valueMap = values[i];
                         timeline.setFrame(frameIndex++, valueMap["time"], valueMap["name"]);
                     }
                     timelines.push(timeline);
@@ -1232,7 +1120,7 @@ spine.Atlas = function (atlasText, textureLoader) {
         var line = reader.readLine();
         if (line == null) break;
         line = reader.trim(line);
-        if (line.length == 0)
+        if (!line.length)
             page = null;
         else if (!page) {
             page = new spine.AtlasPage();
@@ -1421,7 +1309,7 @@ spine.AtlasReader.prototype = {
         for (; i < 3; i++) {
             var comma = line.indexOf(",", lastMatch);
             if (comma == -1) {
-                if (i == 0) throw "Invalid line: " + line;
+                if (!i) throw "Invalid line: " + line;
                 break;
             }
             tuple[i] = this.trim(line.substr(lastMatch, comma - lastMatch));
@@ -1456,5 +1344,122 @@ spine.AtlasAttachmentLoader.prototype = {
     }
 }
 
-PIXI.AnimCache = {};
 spine.Bone.yDown = true;
+PIXI.AnimCache = {};
+
+/**
+ * A class that enables the you to import and run your spine animations in pixi.
+ * Spine animation data needs to be loaded using the PIXI.AssetLoader or PIXI.SpineLoader before it can be used by this class
+ * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
+ *
+ * @class Spine
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param url {String} The url of the spine anim file to be used
+ */
+PIXI.Spine = function (url) {
+    PIXI.DisplayObjectContainer.call(this);
+
+    this.spineData = PIXI.AnimCache[url];
+
+    if (!this.spineData) {
+        throw new Error("Spine data must be preloaded using PIXI.SpineLoader or PIXI.AssetLoader: " + url);
+    }
+
+    this.skeleton = new spine.Skeleton(this.spineData);
+    this.skeleton.updateWorldTransform();
+
+    this.stateData = new spine.AnimationStateData(this.spineData);
+    this.state = new spine.AnimationState(this.stateData);
+
+    this.slotContainers = [];
+
+    for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
+        var slot = this.skeleton.drawOrder[i];
+        var attachment = slot.attachment;
+        var slotContainer = new PIXI.DisplayObjectContainer();
+        this.slotContainers.push(slotContainer);
+        this.addChild(slotContainer);
+        if (!(attachment instanceof spine.RegionAttachment)) {
+            continue;
+        }
+        var spriteName = attachment.rendererObject.name;
+        var sprite = this.createSprite(slot, attachment.rendererObject);
+        slot.currentSprite = sprite;
+        slot.currentSpriteName = spriteName;
+        slotContainer.addChild(sprite);
+    }
+};
+
+PIXI.Spine.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.Spine.prototype.constructor = PIXI.Spine;
+
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
+PIXI.Spine.prototype.updateTransform = function () {
+    this.lastTime = this.lastTime || Date.now();
+    var timeDelta = (Date.now() - this.lastTime) * 0.001;
+    this.lastTime = Date.now();
+    this.state.update(timeDelta);
+    this.state.apply(this.skeleton);
+    this.skeleton.updateWorldTransform();
+
+    var drawOrder = this.skeleton.drawOrder;
+    for (var i = 0, n = drawOrder.length; i < n; i++) {
+        var slot = drawOrder[i];
+        var attachment = slot.attachment;
+        var slotContainer = this.slotContainers[i];
+        if (!(attachment instanceof spine.RegionAttachment)) {
+            slotContainer.visible = false;
+            continue;
+        }
+
+        if (attachment.rendererObject) {
+            if (!slot.currentSpriteName || slot.currentSpriteName != attachment.name) {
+                var spriteName = attachment.rendererObject.name;
+                if (slot.currentSprite !== undefined) {
+                    slot.currentSprite.visible = false;
+                }
+                slot.sprites = slot.sprites || {};
+                if (slot.sprites[spriteName] !== undefined) {
+                    slot.sprites[spriteName].visible = true;
+                } else {
+                    var sprite = this.createSprite(slot, attachment.rendererObject);
+                    slotContainer.addChild(sprite);
+                }
+                slot.currentSprite = slot.sprites[spriteName];
+                slot.currentSpriteName = spriteName;
+            }
+        }
+        slotContainer.visible = true;
+
+        var bone = slot.bone;
+
+        slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
+        slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
+        slotContainer.scale.x = bone.worldScaleX;
+        slotContainer.scale.y = bone.worldScaleY;
+
+        slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+    }
+
+    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+};
+
+
+PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
+    var name = PIXI.TextureCache[descriptor.name] ? descriptor.name : descriptor.name + ".png";
+    var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(name));
+    sprite.scale = descriptor.scale;
+    sprite.rotation = descriptor.rotation;
+    sprite.anchor.x = sprite.anchor.y = 0.5;
+
+    slot.sprites = slot.sprites || {};
+    slot.sprites[descriptor.name] = sprite;
+    return sprite;
+};
+

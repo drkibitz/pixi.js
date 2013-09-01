@@ -44,7 +44,6 @@ PIXI.Rope.prototype.refresh = function()
     var lastPoint = points[0];
     var nextPoint;
     var perp = {x:0, y:0};
-    var point = points[0];
 
     this.count-=0.2;
 
@@ -60,15 +59,16 @@ PIXI.Rope.prototype.refresh = function()
     indices[0] = 0;
     indices[1] = 1;
 
-    var total = points.length;
+    var total = points.length,
+        point, index, amount;
 
-    for (var i =  1; i < total; i++)
+    for (var i = 1; i < total; i++)
     {
 
-        var point = points[i];
-        var index = i * 4;
+        point = points[i];
+        index = i * 4;
         // time to do some smart drawing!
-        var amount = i/(total-1)
+        amount = i/(total-1)
 
         if(i%2)
         {
@@ -106,28 +106,26 @@ PIXI.Rope.prototype.updateTransform = function()
     var points = this.points;
     if(points.length < 1)return;
 
-    var verticies = this.verticies
-
     var lastPoint = points[0];
     var nextPoint;
     var perp = {x:0, y:0};
-    var point = points[0];
 
     this.count-=0.2;
 
-    verticies[0] = point.x + perp.x
-    verticies[1] = point.y + perp.y //+ 200
-    verticies[2] = point.x - perp.x
-    verticies[3] = point.y - perp.y//+200
+    var verticies = this.verticies;
+    verticies[0] = lastPoint.x + perp.x
+    verticies[1] = lastPoint.y + perp.y //+ 200
+    verticies[2] = lastPoint.x - perp.x
+    verticies[3] = lastPoint.y - perp.y//+200
     // time to do some smart drawing!
 
-    var total = points.length;
+    var total = points.length,
+        point, index, ratio, perpLength, num;
 
-    for (var i =  1; i < total; i++)
+    for (var i = 1; i < total; i++)
     {
-
-        var point = points[i];
-        var index = i * 4;
+        point = points[i];
+        index = i * 4;
 
         if(i < points.length-1)
         {
@@ -135,17 +133,17 @@ PIXI.Rope.prototype.updateTransform = function()
         }
         else
         {
-            nextPoint = point
+            nextPoint = point;
         }
 
         perp.y = -(nextPoint.x - lastPoint.x);
         perp.x = nextPoint.y - lastPoint.y;
 
-        var ratio = (1 - (i / (total-1))) * 10;
+        ratio = (1 - (i / (total-1))) * 10;
                 if(ratio > 1)ratio = 1;
 
-        var perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
-        var num = this.texture.height/2//(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+        perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
+        num = this.texture.height/2//(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
         perp.x /= perpLength;
         perp.y /= perpLength;
 

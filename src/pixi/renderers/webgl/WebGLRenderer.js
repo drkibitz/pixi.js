@@ -167,7 +167,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // HACK TO TEST
 
-    this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
+    // this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
     this.stageRenderGroup.render(PIXI.projection);
 
     // interaction
