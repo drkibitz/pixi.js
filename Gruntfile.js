@@ -79,7 +79,6 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/unit/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -94,10 +93,10 @@ module.exports = function(grunt) {
         },
         jshint: {
             beforeconcat: srcFiles,
-            test: ['<%= files.testBlob %>'],
+            afterconcat: '<%= files.build %>',
             options: {
-                asi: true,
-                smarttabs: true
+                jshintrc: '.jshintrc',
+                ignores: ['<%= dirs.src %>/{Intro,Outro}.js']
             }
         },
         uglify: {
