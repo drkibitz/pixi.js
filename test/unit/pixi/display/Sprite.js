@@ -1,15 +1,24 @@
-describe('Sprite', function () {
+describe('pixi/display/Sprite', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Sprite = PIXI.Sprite;
+    var Texture = PIXI.Texture;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Sprite).to.equal('function');
+    it('Module exists', function () {
+        expect(Sprite).to.be.a('function');
+        expect(PIXI).to.have.deep.property('blendModes.NORMAL', 0);
+        expect(PIXI).to.have.deep.property('blendModes.SCREEN', 1);
+    });
+
+    it('Members exist',  function () {
+        expect(Sprite).itself.to.respondTo('fromImage');
+        expect(Sprite).itself.to.respondTo('fromFrame');
     });
 
     it('Confirm new instance', function (done) {
-        var texture = PIXI.Texture.fromImage('/base/test/textures/SpriteSheet-Aliens.png');
-        var obj = new PIXI.Sprite(texture);
+        var texture = Texture.fromImage('/base/test/textures/SpriteSheet-Aliens.png');
+        var obj = new Sprite(texture);
 
         pixi_display_Sprite_confirmNew(obj, done);
     });

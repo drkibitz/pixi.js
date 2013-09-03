@@ -1,9 +1,10 @@
-describe('MaskFilter', function () {
+describe('pixi/filters/MaskFilter', function () {
     'use strict';
 
     var expect = chai.expect;
+    // var MaskFilter = PIXI.MaskFilter;
 
-    // it('Class exists', function () {
-    //     expect(typeof PIXI.MaskFilter).to.equal('function');
+    // it('Module exists', function () {
+    //     expect(MaskFilter).to.be.a('function');
     // });
 });

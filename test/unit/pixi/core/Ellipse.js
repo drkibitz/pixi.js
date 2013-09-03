@@ -1,19 +1,24 @@
-describe('Ellipse', function () {
+describe('pixi/core/Ellipse', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Ellipse = PIXI.Ellipse;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Ellipse).to.equal('function');
+    it('Module exists', function () {
+        expect(Ellipse).to.be.a('function');
     });
 
     it('Confirm new instance', function () {
-        var ellipse = new PIXI.Ellipse();
-        expect(ellipse).to.be.an.instanceof(PIXI.Ellipse);
+        var obj = new Ellipse();
 
-        expect(ellipse.x).to.equal(0);
-        expect(ellipse.y).to.equal(0);
-        expect(ellipse.width).to.equal(0);
-        expect(ellipse.height).to.equal(0);
+        expect(obj).to.be.an.instanceof(Ellipse);
+        expect(obj).to.respondTo('clone');
+        expect(obj).to.respondTo('contains');
+        expect(obj).to.respondTo('getBounds');
+
+        expect(obj).to.have.property('x', 0);
+        expect(obj).to.have.property('y', 0);
+        expect(obj).to.have.property('width', 0);
+        expect(obj).to.have.property('height', 0);
     });
 });

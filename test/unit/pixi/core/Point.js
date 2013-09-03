@@ -1,14 +1,15 @@
-describe('Point', function () {
+describe('pixi/core/Point', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Point = PIXI.Point;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Point).to.equal('function');
+    it('Module exists', function () {
+        expect(Point).to.be.a('function');
     });
 
     it('Confirm new instance', function () {
-        var point = new PIXI.Point();
-        pixi_core_Point_confirmNew(point);
+        var obj = new Point();
+        pixi_core_Point_confirm(obj, 0, 0);
     });
 });

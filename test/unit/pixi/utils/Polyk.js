@@ -1,13 +1,14 @@
-describe('PolyK', function () {
+describe('pixi/utils/Polyk', function () {
     'use strict';
 
     var expect = chai.expect;
+    var PolyK = PIXI.PolyK;
 
-    it('Namespace exists', function () {
-        expect(typeof PIXI.PolyK).to.equal('object');
+    it('Module exists', function () {
+        expect(PolyK).to.be.an('object');
     });
 
-    it('Function exists', function () {
-        expect(typeof PIXI.PolyK.Triangulate).to.equal('function');
+    it('Members exist', function () {
+        expect(PolyK).to.respondTo('Triangulate');
     });
 });

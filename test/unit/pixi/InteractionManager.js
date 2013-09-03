@@ -1,9 +1,10 @@
-describe('InteractionManager', function () {
+describe('pixi/InteractionManager', function () {
     'use strict';
 
     var expect = chai.expect;
+    var InteractionManager = PIXI.InteractionManager;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.InteractionManager).to.equal('function');
+    it('Module exists', function () {
+        expect(InteractionManager).to.be.a('function');
     });
 });

@@ -1,11 +1,13 @@
 
-function pixi_core_Rectangle_confirmNew(rect) {
+function pixi_core_Rectangle_confirm(obj, x, y, width, height) {
     var expect = chai.expect;
 
-    expect(rect).to.be.an.instanceof(PIXI.Rectangle);
+    expect(obj).to.be.an.instanceof(PIXI.Rectangle);
+    expect(obj).to.respondTo('clone');
+    expect(obj).to.respondTo('contains');
 
-    expect(rect.x).to.equal(0);
-    expect(rect.y).to.equal(0);
-    expect(rect.width).to.equal(0);
-    expect(rect.height).to.equal(0);
+    expect(obj).to.have.property('x', x);
+    expect(obj).to.have.property('y', y);
+    expect(obj).to.have.property('width', width);
+    expect(obj).to.have.property('height', height);
 }

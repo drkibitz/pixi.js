@@ -1,8 +1,10 @@
-describe('Detector', function () {
+describe('pixi/utils/Detector', function () {
     'use strict';
-    var expect = chai.expect;
 
-    it('Function exists', function () {
-        expect(typeof PIXI.autoDetectRenderer).to.equal('function');
+    var expect = chai.expect;
+    var autoDetectRenderer = PIXI.autoDetectRenderer;
+
+    it('Module exists', function () {
+        expect(autoDetectRenderer).to.be.a('function');
     });
 });

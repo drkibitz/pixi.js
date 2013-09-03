@@ -1,45 +1,49 @@
-describe('Stage', function () {
+describe('pixi/display/Stage', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Stage = PIXI.Stage;
+    var InteractionManager = PIXI.InteractionManager;
+    var Rectangle = PIXI.Rectangle;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Stage).to.equal('function');
+    it('Module exists', function () {
+        expect(Stage).to.be.a('function');
     });
 
     it('Confirm new instance', function () {
-        var obj = new PIXI.Stage(null, true);
+        var obj = new Stage(null, true);
 
         pixi_display_DisplayObjectContainer_confirmNew(obj);
+
+        expect(obj).to.be.an.instanceof(Stage);
+        expect(obj).to.respondTo('updateTransform');
+        expect(obj).to.respondTo('setBackgroundColor');
+        expect(obj).to.respondTo('getMousePosition');
 
         // FIXME: duplicate member in DisplayObject
         pixi_core_Matrix_confirmNewMat3(obj.worldTransform);
         // FIXME: convert arg to bool in constructor
-        expect(obj.interactive).to.be.true;
-        expect(obj.interactionManager).to.be.an.instanceof(PIXI.InteractionManager);
-        expect(obj.interactionManager.stage).to.equal(obj);
-        expect(obj.dirty).to.be.true;
+        expect(obj).to.have.property('interactive', true);
 
-        expect(obj.__childrenAdded).to.be.an.instanceof(Array);
-        expect(obj.__childrenAdded).to.be.empty;
-        expect(obj.__childrenRemoved).to.be.an.instanceof(Array);
-        expect(obj.__childrenRemoved).to.be.empty;
+        expect(obj).to.have.property('interactionManager')
+            .and.to.be.an.instanceof(InteractionManager)
+            .and.to.have.property('stage', obj);
 
-        expect(obj.stage).to.equal(obj);
+        expect(obj).to.have.property('dirty', true);
 
-        expect(obj.hitArea).to.be.an.instanceof(PIXI.Rectangle);
-        expect(obj.hitArea.x).to.equal(0);
-        expect(obj.hitArea.y).to.equal(0);
-        expect(obj.hitArea.width).to.equal(100000);
-        expect(obj.hitArea.height).to.equal(100000);
+        expect(obj).to.have.property('stage', obj);
 
-        expect(obj.backgroundColor).to.equal(0x000000);
-        expect(obj.backgroundColorSplit).to.be.an.instanceof(Array);
-        expect(obj.backgroundColorSplit[0]).to.equal(0);
-        expect(obj.backgroundColorSplit[1]).to.equal(0);
-        expect(obj.backgroundColorSplit[2]).to.equal(0);
-        expect(obj.backgroundColorString).to.equal('#000000');
+        expect(obj).to.have.property('hitArea')
+            .and.to.be.an.instanceof(Rectangle);
+        pixi_core_Rectangle_confirm(obj.hitArea, 0, 0, 100000, 100000);
 
-        expect(obj.worldVisible).to.be.true;
+        expect(obj).to.have.property('backgroundColor', 0x000000);
+        expect(obj).to.have.deep.property('backgroundColorSplit.length', 3);
+        expect(obj).to.have.deep.property('backgroundColorSplit[0]', 0);
+        expect(obj).to.have.deep.property('backgroundColorSplit[1]', 0);
+        expect(obj).to.have.deep.property('backgroundColorSplit[2]', 0);
+        expect(obj).to.have.property('backgroundColorString', '#000000');
+
+        expect(obj).to.have.property('worldVisible', true);
     });
 });

@@ -1,17 +1,20 @@
-describe('Polygon', function () {
+describe('pixi/core/Polygon', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Polygon = PIXI.Polygon;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Polygon).to.equal('function');
+    it('Module exists', function () {
+        expect(Polygon).to.be.a('function');
     });
 
     it('Confirm new instance', function () {
-        var polygon = new PIXI.Polygon();
-        expect(polygon).to.be.an.instanceof(PIXI.Polygon);
+        var obj = new Polygon();
 
-        expect(polygon.points).to.be.an.instanceof(Array);
-        expect(polygon.points.length).to.be.empty;
+        expect(obj).to.be.an.instanceof(Polygon);
+        expect(obj).to.respondTo('clone');
+        expect(obj).to.respondTo('contains');
+
+        expect(obj).to.have.deep.property('points.length', 0);
     });
 });

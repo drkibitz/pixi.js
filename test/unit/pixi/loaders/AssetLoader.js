@@ -1,9 +1,10 @@
-describe('AssetLoader', function () {
+describe('pixi/loaders/AssetLoader', function () {
     'use strict';
 
     var expect = chai.expect;
+    var AssetLoader = PIXI.AssetLoader;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.AssetLoader).to.equal('function');
+    it('Module exists', function () {
+        expect(AssetLoader).to.be.a('function');
     });
 });

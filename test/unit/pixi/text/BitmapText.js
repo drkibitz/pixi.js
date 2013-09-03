@@ -1,9 +1,10 @@
-describe('BitmapText', function () {
+describe('pixi/text/BitmapText', function () {
     'use strict';
 
     var expect = chai.expect;
+    var BitmapText = PIXI.BitmapText;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.BitmapText).to.equal('function');
+    it('Module exists', function () {
+        expect(BitmapText).to.be.a('function');
     });
 });

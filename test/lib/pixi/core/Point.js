@@ -1,9 +1,10 @@
 
-function pixi_core_Point_confirmNew(point) {
+function pixi_core_Point_confirm(obj, x, y) {
     var expect = chai.expect;
 
-    expect(point).to.be.an.instanceof(PIXI.Point);
+    expect(obj).to.be.an.instanceof(PIXI.Point);
+    expect(obj).to.respondTo('clone');
 
-    expect(point.x).to.equal(0);
-    expect(point.y).to.equal(0);
+    expect(obj).to.have.property('x', x);
+    expect(obj).to.have.property('y', y);
 }

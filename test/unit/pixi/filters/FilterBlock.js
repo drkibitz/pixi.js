@@ -1,9 +1,10 @@
-describe('FilterBlock', function () {
+describe('pixi/filters/FilterBlock', function () {
     'use strict';
 
     var expect = chai.expect;
+    var FilterBlock = PIXI.FilterBlock;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.FilterBlock).to.equal('function');
+    it('Module exists', function () {
+        expect(FilterBlock).to.be.a('function');
     });
 });

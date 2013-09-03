@@ -1,19 +1,20 @@
-describe('DisplayObjectContainer', function () {
+describe('pixi/display/DisplayObjectContainer', function () {
     'use strict';
 
     var expect = chai.expect;
+    var DisplayObjectContainer = PIXI.DisplayObjectContainer;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.DisplayObjectContainer).to.equal('function');
+    it('Module exists', function () {
+        expect(DisplayObjectContainer).to.be.a('function');
     });
 
     it('Confirm new instance', function () {
-        var obj = new PIXI.DisplayObjectContainer();
+        var obj = new DisplayObjectContainer();
 
         pixi_display_DisplayObjectContainer_confirmNew(obj);
-        expect(obj.hitArea).to.be.null;
-        expect(obj.interactive).to.be.false;
-        expect(obj.renderable).to.be.false;
-        expect(obj.stage).to.be.null;
+        expect(obj).to.have.property('hitArea', null);
+        expect(obj).to.have.property('interactive', false);
+        expect(obj).to.have.property('renderable', false);
+        expect(obj).to.have.property('stage', null);
     });
 });

@@ -1,9 +1,10 @@
-describe('CanvasRenderer', function () {
+describe('renderers/canvas/CanvasRenderer', function () {
     'use strict';
 
     var expect = chai.expect;
+    var CanvasRenderer = PIXI.CanvasRenderer;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.CanvasRenderer).to.equal('function');
+    it('Module exists', function () {
+        expect(CanvasRenderer).to.be.a('function');
     });
 });

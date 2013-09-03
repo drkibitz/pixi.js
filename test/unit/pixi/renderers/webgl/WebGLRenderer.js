@@ -1,9 +1,10 @@
-describe('WebGLRenderer', function () {
+describe('renderers/webgl/WebGLRenderer', function () {
     'use strict';
 
     var expect = chai.expect;
+    var WebGLRenderer = PIXI.WebGLRenderer;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.WebGLRenderer).to.equal('function');
+    it('Module exists', function () {
+        expect(WebGLRenderer).to.be.a('function');
     });
 });

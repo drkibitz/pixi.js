@@ -1,9 +1,10 @@
-describe('SpriteSheetLoader', function () {
+describe('pixi/loaders/SpriteSheetLoader', function () {
     'use strict';
 
     var expect = chai.expect;
+    var SpriteSheetLoader = PIXI.SpriteSheetLoader;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.SpriteSheetLoader).to.equal('function');
+    it('Module exists', function () {
+        expect(SpriteSheetLoader).to.be.a('function');
     });
 });

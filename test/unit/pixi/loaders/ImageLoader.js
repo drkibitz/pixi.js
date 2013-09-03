@@ -1,9 +1,10 @@
-describe('ImageLoader', function () {
+describe('pixi/loaders/ImageLoader', function () {
     'use strict';
 
     var expect = chai.expect;
+    var ImageLoader = PIXI.ImageLoader;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.ImageLoader).to.equal('function');
+    it('Module exists', function () {
+        expect(ImageLoader).to.be.a('function');
     });
 });

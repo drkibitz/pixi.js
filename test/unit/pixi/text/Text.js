@@ -1,9 +1,10 @@
-describe('Text', function () {
+describe('pixi/text/Text', function () {
     'use strict';
 
     var expect = chai.expect;
+    var Text = PIXI.Text;
 
-    it('Class exists', function () {
-        expect(typeof PIXI.Text).to.equal('function');
+    it('Module exists', function () {
+        expect(Text).to.be.a('function');
     });
 });
