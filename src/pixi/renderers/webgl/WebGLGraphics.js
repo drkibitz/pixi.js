@@ -157,7 +157,7 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 
     if(graphicsData.fill)
     {
-        var color = HEXtoRGB(graphicsData.fillColor);
+        var color = hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
 
         var r = color[0] * alpha;
@@ -225,7 +225,7 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        var color = HEXtoRGB(graphicsData.fillColor);
+        var color = hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
 
         var r = color[0] * alpha;
@@ -314,7 +314,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     var width = graphicsData.lineWidth / 2;
 
     // sort color
-    var color = HEXtoRGB(graphicsData.lineColor);
+    var color = hex2rgb(graphicsData.lineColor);
     var alpha = graphicsData.lineAlpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;
@@ -490,7 +490,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
     }
 
     // sort color
-    var color = HEXtoRGB(graphicsData.fillColor);
+    var color = hex2rgb(graphicsData.fillColor);
     var alpha = graphicsData.fillAlpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;

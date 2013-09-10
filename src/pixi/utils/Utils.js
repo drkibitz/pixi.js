@@ -43,10 +43,10 @@ window.requestAnimFrame = window.requestAnimationFrame;
 /**
  * Converts a hex color number to an [R, G, B] array
  *
- * @method HEXtoRGB
+ * @method hex2rgb
  * @param hex {Number}
  */
-function HEXtoRGB(hex) {
+function hex2rgb(hex) {
     return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
 }
 
