@@ -891,6 +891,7 @@ spine.SkeletonJson = function (attachmentLoader) {
 spine.SkeletonJson.prototype = {
     scale: 1,
     readSkeletonData: function (root) {
+        /*jshint -W069*/
         var skeletonData = new spine.SkeletonData(),
             boneData;
 
@@ -964,6 +965,7 @@ spine.SkeletonJson.prototype = {
         return skeletonData;
     },
     readAttachment: function (skin, name, map) {
+        /*jshint -W069*/
         name = map["name"] || name;
 
         var type = spine.AttachmentType[map["type"] || "region"];
@@ -992,6 +994,7 @@ spine.SkeletonJson.prototype = {
     },
 
     readAnimation: function (name, map, skeletonData) {
+        /*jshint -W069*/
         var timelines = [];
         var duration = 0;
         var frameIndex, timeline, timelineName, valueMap, values,
@@ -1095,6 +1098,7 @@ spine.SkeletonJson.prototype = {
     }
 };
 spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
+    /*jshint -W069*/
     var curve = valueMap["curve"];
     if (!curve) return;
     if (curve == "stepped")
