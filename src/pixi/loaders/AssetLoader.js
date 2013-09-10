@@ -91,11 +91,11 @@ PIXI.AssetLoader.prototype.load = function()
         var fileName = this.assetURLs[i];
         var fileType = fileName.split(".").pop().toLowerCase();
 
-        var loaderClass = this.loadersByType[fileType];
-        if(!loaderClass)
+        var Constructor = this.loadersByType[fileType];
+        if(!Constructor)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var loader = new Constructor(fileName, this.crossorigin);
 
         loader.addEventListener("loaded", onLoad);
         loader.load();
