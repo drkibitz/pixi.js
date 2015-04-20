@@ -1,4 +1,5 @@
 var core = require('../core'),
+    ticker = require('../ticker'),
     InteractionData = require('./InteractionData');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
@@ -198,7 +199,7 @@ InteractionManager.prototype.addEvents = function ()
         return;
     }
 
-    core.ticker.shared.add(this.update, this);
+    ticker.shared.add(this.update, this);
 
     if (window.navigator.msPointerEnabled)
     {
@@ -230,7 +231,7 @@ InteractionManager.prototype.removeEvents = function ()
         return;
     }
 
-    core.ticker.shared.remove(this.update);
+    ticker.shared.remove(this.update);
 
     if (window.navigator.msPointerEnabled)
     {
