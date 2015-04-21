@@ -97,45 +97,36 @@ function InteractionManager(renderer, options)
     /**
      * @member {Function}
      */
-    this.onMouseUp = this.onMouseUp.bind(this);
     this.processMouseUp = this.processMouseUp.bind( this );
-
 
     /**
      * @member {Function}
      */
-    this.onMouseDown = this.onMouseDown.bind(this);
     this.processMouseDown = this.processMouseDown.bind( this );
 
     /**
      * @member {Function}
      */
-    this.onMouseMove = this.onMouseMove.bind( this );
     this.processMouseMove = this.processMouseMove.bind( this );
 
     /**
      * @member {Function}
      */
-    this.onMouseOut = this.onMouseOut.bind(this);
     this.processMouseOverOut = this.processMouseOverOut.bind( this );
-
 
     /**
      * @member {Function}
      */
-    this.onTouchStart = this.onTouchStart.bind(this);
     this.processTouchStart = this.processTouchStart.bind(this);
 
     /**
      * @member {Function}
      */
-    this.onTouchEnd = this.onTouchEnd.bind(this);
     this.processTouchEnd = this.processTouchEnd.bind(this);
 
     /**
      * @member {Function}
      */
-    this.onTouchMove = this.onTouchMove.bind(this);
     this.processTouchMove = this.processTouchMove.bind(this);
 
     /**
@@ -169,6 +160,23 @@ InteractionManager.prototype.constructor = InteractionManager;
 module.exports = InteractionManager;
 
 /**
+ * Listener for all the DOM events
+ * @private
+ */
+InteractionManager.prototype.handleEvent = function (event)
+{
+    switch (event.type) {
+        case 'mousemove':  this.onMouseMove(event);  break;
+        case 'mousedown':  this.onMouseDown(event);  break;
+        case 'mouseout':   this.onMouseOut(event);   break;
+        case 'touchstart': this.onTouchStart(event); break;
+        case 'touchend':   this.onTouchEnd(event);   break;
+        case 'touchmove':  this.onTouchMove(event);  break;
+        case 'mouseup':    this.onMouseUp(event);    break;
+    }
+};
+
+/**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
  * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
  * another DOM element to receive those events.
@@ -194,7 +202,9 @@ InteractionManager.prototype.setTargetElement = function (element, resolution)
  */
 InteractionManager.prototype.addEvents = function ()
 {
-    if (!this.interactionDOMElement)
+    var domElement = this.interactionDOMElement;
+
+    if (!domElement)
     {
         return;
     }
@@ -203,17 +213,17 @@ InteractionManager.prototype.addEvents = function ()
 
     if (window.navigator.msPointerEnabled)
     {
-        this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
-        this.interactionDOMElement.style['-ms-touch-action'] = 'none';
+        domElement.style['-ms-content-zooming'] = 'none';
+        domElement.style['-ms-touch-action'] = 'none';
     }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
-    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
-    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    window.document.addEventListener('mousemove', this, true);
+    domElement.addEventListener('mousedown', this, true);
+    domElement.addEventListener('mouseout', this, true);
 
-    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
-    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
-    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
+    domElement.addEventListener('touchstart', this, true);
+    domElement.addEventListener('touchend', this, true);
+    domElement.addEventListener('touchmove', this, true);
 
     window.addEventListener('mouseup',  this.onMouseUp, true);
 
@@ -226,7 +236,9 @@ InteractionManager.prototype.addEvents = function ()
  */
 InteractionManager.prototype.removeEvents = function ()
 {
-    if (!this.interactionDOMElement)
+    var domElement = this.interactionDOMElement;
+
+    if (!domElement)
     {
         return;
     }
@@ -235,17 +247,17 @@ InteractionManager.prototype.removeEvents = function ()
 
     if (window.navigator.msPointerEnabled)
     {
-        this.interactionDOMElement.style['-ms-content-zooming'] = '';
-        this.interactionDOMElement.style['-ms-touch-action'] = '';
+        domElement.style['-ms-content-zooming'] = '';
+        domElement.style['-ms-touch-action'] = '';
     }
 
-    window.document.removeEventListener('mousemove', this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    window.document.removeEventListener('mousemove', this, true);
+    domElement.removeEventListener('mousedown', this, true);
+    domElement.removeEventListener('mouseout',  this, true);
 
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    domElement.removeEventListener('touchstart', this, true);
+    domElement.removeEventListener('touchend',  this, true);
+    domElement.removeEventListener('touchmove', this, true);
 
     this.interactionDOMElement = null;
 
@@ -814,27 +826,12 @@ InteractionManager.prototype.destroy = function () {
 
     this.interactionDOMElement = null;
 
-    this.onMouseUp = null;
     this.processMouseUp = null;
-
-
-    this.onMouseDown = null;
     this.processMouseDown = null;
-
-    this.onMouseMove = null;
     this.processMouseMove = null;
-
-    this.onMouseOut = null;
     this.processMouseOverOut = null;
-
-
-    this.onTouchStart = null;
     this.processTouchStart = null;
-
-    this.onTouchEnd = null;
     this.processTouchEnd = null;
-
-    this.onTouchMove = null;
     this.processTouchMove = null;
 
     this._tempPoint = null;
